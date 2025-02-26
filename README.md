@@ -67,7 +67,8 @@ Um deine Nuxt-Anwendung dauerhaft laufen zu lassen, kannst du bei Profihost eine
 
 ```bash
 # Lade eine vorkonfigurierte Daemon-Datei herunter
-wget -O nuxt-daemon.json https://raw.githubusercontent.com/haupt-pascal/profihost-nuxt/main/daemon.sh
+wget https://raw.githubusercontent.com/haupt-pascal/profihost-nuxt/main/daemon.sh
+chmod +x daemon.sh
 ```
 
 Nach dem Erstellen der Daemon-Konfigurationsdatei:
