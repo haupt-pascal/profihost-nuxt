@@ -268,7 +268,7 @@ npm run preview</div>
                                 <div class="relative">
                                     <div class="code-block mb-4">
 # Lade eine vorkonfigurierte Daemon-Datei herunter <br>
-wget https://raw.githubusercontent.com/haupt-pascal/profihost-nuxt/main/daemon.sh
+wget https://raw.githubusercontent.com/haupt-pascal/profihost-nuxt/main/daemon.sh <br>
 chmod +x daemon.sh
 </div>
                                     <button
