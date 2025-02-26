@@ -1,121 +1,146 @@
-# Nuxt.js auf Profihost
+# Welcome to Nuxt.js on Profihost!
 
-Diese Dokumentation führt dich durch den Prozess der Installation und Konfiguration einer Nuxt.js-Anwendung auf einem Profihost-Server. Folge den Schritten in den einzelnen Abschnitten, um eine vollständig funktionsfähige Nuxt-Anwendung zu erstellen und als Dienst zu betreiben.
+A modern, production-ready template for deploying Nuxt.js applications on Profihost hosting services.
 
-## Inhaltsverzeichnis
+## Features
 
-1. [Node Version Manager (NVM) installieren](#1-node-version-manager-nvm-installieren)
-2. [Nuxt-Projekt erstellen und konfigurieren](#2-nuxt-projekt-erstellen-und-konfigurieren)
-3. [Service Daemon bei Profihost einrichten](#3-service-daemon-bei-profihost-einrichten)
-4. [.htaccess als Reverse Proxy konfigurieren](#4-htaccess-als-reverse-proxy-konfigurieren)
-5. [Wichtige Hinweise](#wichtige-hinweise)
-6. [Weitere Ressourcen](#weitere-ressourcen)
+- 🚀 Server-side rendering with Nuxt.js
+- ⚡️ Hot Module Replacement (HMR) for development
+- 📦 Asset bundling and optimization
+- 🔄 Automatic API route generation
+- 🔒 TypeScript support out of the box
+- 🌐 Easy deployment on Profihost servers
+- 🔄 Daemon service for continuous uptime
+- 🔀 Apache reverse proxy configuration
+- 📖 [Nuxt.js docs](https://nuxt.com/docs)
 
-## 1. Node Version Manager (NVM) installieren
+## Getting Started
 
-NVM ermöglicht dir, verschiedene Node.js-Versionen zu verwalten und zwischen ihnen zu wechseln. Dies ist besonders nützlich, wenn du mehrere Projekte mit unterschiedlichen Node.js-Versionsanforderungen hast.
+### Prerequisites
+
+First, install Node Version Manager (NVM) to manage your Node.js versions:
 
 ```bash
-# Installiere NVM
+# Install NVM
 wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
 
-# Lade die Umgebungsvariablen neu
+# Load NVM environment
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-# Überprüfe die Installation
-nvm --version
-
-# Installiere die neueste stabile Node.js-Version
+# Install latest LTS version of Node.js
 nvm install --lts
-
-# Überprüfe die Node.js-Installation
-node --version
-npm --version
 ```
 
-Nach der Installation kannst du jederzeit zwischen verschiedenen Node.js-Versionen wechseln. Für Nuxt.js empfehlen wir mindestens Node.js 16.x oder höher.
+### Installation
 
-## 2. Nuxt-Projekt erstellen und konfigurieren
-
-Erstelle ein neues Nuxt-Projekt mit dem offiziellen Nuxt-CLI-Tool. Du kannst die Standard-Template-Einstellungen verwenden oder dein Projekt individuell konfigurieren.
+Create a new Nuxt project and install dependencies:
 
 ```bash
-# Wechsle in das gewünschte Verzeichnis
-cd ~/
+# Create a new Nuxt project
+npx nuxi@latest init my-nuxt-app
 
-# Erstelle ein neues Nuxt-Projekt
-npx nuxi@latest init mein-nuxt-projekt
+# Navigate to project directory
+cd my-nuxt-app
 
-# Wechsle in das Projektverzeichnis
-cd mein-nuxt-projekt
-
-# Installiere Abhängigkeiten
+# Install dependencies
 npm install
+```
 
-# Erstelle ein Produktions-Build
+### Development
+
+Start the development server with HMR:
+
+```bash
+npm run dev
+```
+
+Your application will be available at `http://localhost:3000`.
+
+## Building for Production
+
+Create a production build:
+
+```bash
 npm run build
-
-# Teste die Anwendung lokal
-npm run preview
 ```
 
-## 3. Service Daemon bei Profihost einrichten
+## Deployment on Profihost
 
-Um deine Nuxt-Anwendung dauerhaft laufen zu lassen, kannst du bei Profihost einen Service Daemon einrichten. Dazu musst du eine Daemon-Konfigurationsdatei erstellen und beim Hosting-Panel hochladen.
+### 1. Set Up a Service Daemon
+
+To keep your Nuxt application running continuously:
 
 ```bash
-# Lade eine vorkonfigurierte Daemon-Datei herunter
-wget https://raw.githubusercontent.com/haupt-pascal/profihost-nuxt/main/daemon.sh
-chmod +x daemon.sh
+# Download the preconfigured daemon script
+wget -O nuxt-daemon.json https://raw.githubusercontent.com/haupt-pascal/profihost-nuxt/main/daemon.sh
 ```
 
-Nach dem Erstellen der Daemon-Konfigurationsdatei:
+After downloading the daemon file:
 
-1. Logge dich in dein Profihost Kundencenter ein
-2. Navigiere zu deinem Server
-3. Suche nach der Option "Daemon" oder "Service Daemon"
-4. Lade die erstellte daemon.sh Datei auf den Speicherplatz
-5. Passe die Pfade innerhalb des Scripts an
-6. Hinterlege als Befehl / Script den Pfad zum Script
-7. Aktiviere den Daemon
+1. Log in to your Profihost customer center
+2. Navigate to your server settings
+3. Look for the "Daemon" or "Service Daemon" option
+4. Upload the `daemon.sh` file to your storage
+5. Adjust the paths within the script as needed
+6. Set the path to the script as the command/script
+7. Activate the daemon
 
-Dein Nuxt-Dienst sollte nun automatisch starten und im Falle eines Absturzes neu gestartet werden.
+### 2. Configure Reverse Proxy with .htaccess
 
-## 4. .htaccess als Reverse Proxy konfigurieren
-
-Um deinen Nuxt-Server über deine Domain erreichbar zu machen, kannst du Apache's mod_proxy mit einer .htaccess-Datei als Reverse Proxy konfigurieren.
+Set up an Apache reverse proxy to make your Nuxt application accessible through your domain:
 
 ```bash
-# Erstelle eine .htaccess-Datei im Hauptverzeichnis deiner Website
+# Create an .htaccess file in your website's root directory
 cat > .htaccess << 'EOL'
 DirectoryIndex disabled
 
 RewriteEngine On
 
-#RewriteCond %{REQUEST_FILENAME} !-d
-#RewriteCond %{REQUEST_FILENAME} !-f
-
 RewriteRule (.*) http://DAEMON_IP_ADDRESS:3000/$1 [P,L]
 EOL
 
-# Alternativ: Lade eine vorkonfigurierte .htaccess-Datei herunter
+# Alternatively, download a preconfigured .htaccess file
 wget -O .htaccess https://raw.githubusercontent.com/haupt-pascal/profihost-nuxt/main/.htaccess
 ```
 
-Die .htaccess-Datei leitet alle Anfragen an deine Domain an den lokalen Nuxt-Server weiter, der auf Port 3000 läuft. Dadurch kannst du deine Nuxt-Anwendung über deine normale Domain aufrufen, ohne den Port angeben zu müssen.
+Don't forget to replace `DAEMON_IP_ADDRESS` with your actual server IP address.
 
-## Wichtige Hinweise
+## Configuration Options
 
-- Passe den Port (3000) an, falls du einen anderen Port in deiner Daemon-Konfiguration verwendest
-- Solltest du auf Fehler stoßen, hilft dir der Support unter support@profihost.com gerne weiter
+### nuxt.config.ts
 
-## Weitere Ressourcen
+Optimize your Nuxt configuration for Profihost:
 
-- [Nuxt Dokumentation](https://nuxt.com/docs) - Offizielle Nuxt-Dokumentation für detaillierte Informationen zu allen Features
-- [GitHub Repository](https://github.com/haupt-pascal/profihost-nuxt) - Beispiel-Repository mit zusätzlichen Konfigurationsbeispielen für Profihost
+```typescript
+// nuxt.config.ts
+export default defineNuxtConfig({
+  // Enable SSR mode
+  ssr: true,
+  
+  // Set host to listen on all network interfaces
+  devServer: {
+    host: '0.0.0.0'
+  },
+  
+  // Configure server preset
+  nitro: {
+    preset: 'node-server'
+  }
+})
+```
+
+## Troubleshooting
+
+- If you encounter port conflicts, modify the port (default: 3000) in your daemon configuration
+- For any issues, contact Profihost support at support@profihost.com
+
+## Additional Resources
+
+- [Nuxt Documentation](https://nuxt.com/docs) - Comprehensive guide to Nuxt features
+- [Profihost Nuxt Examples](https://github.com/haupt-pascal/profihost-nuxt) - Sample configurations for Profihost deployments
 
 ---
 
-© 2025 Nuxt - MIT License
+Built with ❤️ using Nuxt.js and hosted on Profihost.
