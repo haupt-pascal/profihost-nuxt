@@ -1,0 +1,8 @@
+DirectoryIndex disabled
+
+RewriteEngine On
+
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteCond %{REQUEST_FILENAME} !-f
+
+RewriteRule (.*)  http://DAEMON_IP_ADDRESS:3000/$1 [P,L]
